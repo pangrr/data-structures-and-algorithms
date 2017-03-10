@@ -1,27 +1,22 @@
 function Node(value) {
   this.value = value;
-  this.pre = undefined;
   this.next = undefined;
 }
 
 function Stack() {
-  this.bottom = new Node(undefined);
-  this.top = this.bottom;
+  this.head = new Node(undefined);
 }
 
 Stack.prototype.push = function(value) {
   let newNode = new Node(value);
-  newNode.pre = this.top;
-  this.top.next = newNode;
-  this.top = newNode;
+  newNode.next = this.head.next;
+  this.head.next = newNode;
 }
 
 Stack.prototype.pop = function() {
-  if (this.top.pre !== undefined) {
-    let value = this.top.value;
-    this.top = this.top.pre;
-    this.top.next.pre = undefined;
-    this.top.next = undefined;
+  if (this.head.next !== undefined) {
+    let value = this.head.next.value;
+    this.head.next = this.head.next.next;
     return value;
   } else {
     return undefined;
@@ -29,12 +24,16 @@ Stack.prototype.pop = function() {
 }
 
 Stack.prototype.peek = function() {
-  return this.top.value;
+  if (this.head.next === undefined) {
+    return undefined;
+  } else {
+    return this.head.next.value;
+  }
 }
 
 Stack.prototype.print = function() {
   let array = [];
-  let node = this.bottom.next;
+  let node = this.head.next;
   while (node !== undefined) {
     array.push(node.value);
     node = node.next;
