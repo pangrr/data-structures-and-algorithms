@@ -1,6 +1,6 @@
 function Node(value) {
   this.value = value;
-  this.children = [];
+  this.neighbors = [];
   this.visited = false;
 }
 
@@ -11,9 +11,9 @@ Node.prototype.markVisited = function() {
 
 function dfs(node) {
   node.markVisited();
-  for (let child of node.children) {
-    if (child.visited === false) {
-      dfs(child);
+  for (let neighbor of node.neighbors) {
+    if (neighbor.visited === false) {
+      dfs(neighbor);
     }
   }
 }
@@ -28,12 +28,12 @@ let node6 = new Node(6);
 let node7 = new Node(7);
 let node8 = new Node(8);
 
-node1.children.push(node2);
-node1.children.push(node5);
-node2.children.push(node3);
-node3.children.push(node4);
-node5.children.push(node6);
-node6.children.push(node7);
-node6.children.push(node8);
+node1.neighbors.push(node2);
+node1.neighbors.push(node5);
+node2.neighbors.push(node3);
+node3.neighbors.push(node4);
+node5.neighbors.push(node6);
+node6.neighbors.push(node7);
+node6.neighbors.push(node8);
 
 dfs(node1);
