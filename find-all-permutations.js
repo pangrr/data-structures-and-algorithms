@@ -23,3 +23,20 @@ function insertCharToStr(c, s) {
 }
 
 console.log(allPerms('1234'));
+
+// Another way to find all permutations of a string in O(n^2 * n!)
+function findAllPermutations(s) {
+  helper('', s);
+}
+
+function helper(pre, rem) {
+  if (rem.length === 0) {
+    console.log(pre);
+  } else {
+    for (let i = 0; i < rem.length; i++) {
+      helper(pre + rem.charAt(i), rem.substring(0, i) + rem.substring(i + 1));
+    }
+  }
+}
+
+findAllPermutations('0123');
