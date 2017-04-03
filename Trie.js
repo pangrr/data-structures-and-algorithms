@@ -1,127 +1,76 @@
-/**
- * Node
- */
-function Node(value) {
-  this.value = value;
-  this.nPrefix = 0;
-  this.nWord = 0;
-  this.children = [];
-  for (let i = 0; i < 26; i++) {
-    this.children.push(undefined);
-  }
-}
-
-Node.prototype.increaseNPrefix = function() {
-  this.nPrefix++;
-}
-
-Node.prototype.increaseNWord = function() {
-  this.nWord++;
-}
-
-Node.prototype.addChild = function(node) {
-  this.children.push(node);
-}
-
-Node.prototype.getValue = function() {
-  return this.value;
-}
-
-Node.prototype.getNPrefix = function() {
-  return this.nPrefix;
-}
-
-Node.prototype.getNWord = function() {
-  return this.nWord;
-}
-
-Node.prototype.getChildren = function() {
-  return this.children;
-}
-
-Node.prototype.addWord = function(word) {
-  this.increaseNPrefix();
-  
-  if (word.length === 0) {
-    this.increaseNWord();
-  } else {
-    let c = word.charAt(0);
-    let i = c.charCodeAt(0) - 'a'.charCodeAt(0);
-    let children = this.getChildren();
-    let child = children[i];
-    let nextWord = word.substring(1, word.length);
-    
-    if (child !== undefined) {
-      child.addWord(nextWord);
-    } else {
-      let newNode = new Node(c);
-      children[i] = newNode;
-      newNode.addWord(nextWord);
-    }
-  }
-}
-
-Node.prototype.countWord = function(word) {
-  if (word.length === 0) {
-    return this.getNWord();
-  } else {
-    let c = word.charAt(0);
-    let i = c.charCodeAt(0) - 'a'.charCodeAt(0);
-    let child = this.getChildren()[i];
-
-    if (child === undefined) {
-      return 0;
-    } else {
-      return child.countWord(word.substring(1, word.length));
-    }
-  }
-}
-
-Node.prototype.countPrefix = function(prefix) {
-  if (prefix.length === 0) {
-    return this.getNPrefix();
-  } else {
-    let c = prefix.charAt(0);
-    let i = c.charCodeAt(0) - 'a'.charCodeAt(0);
-    let child = this.getChildren()[i];
-
-    if (child === undefined) {
-      return 0;
-    } else {
-      return child.countPrefix(prefix.substring(1, prefix.length));
-    }
-  }
-}
-
-/**
- * Trie
- */
+// implement a trie
 function Trie() {
-  this.root = new Node('');
+  this.root = new Node();
 }
 
-Trie.prototype.addWord = function(word) {
-  this.root.addWord(word);
+function Node(char) {
+  this.char = char || ''; 
+  this.children = {}; // char: node
+  this.word = 0;
+  this.prefix = 0;
+}
+
+Trie.prototype.add = function(word) {
+  addWordToNode(word, this.root);
 }
 
 Trie.prototype.countWord = function(word) {
-  return this.root.countWord(word);
+  return countWordOnNode(word, this.root);
 }
 
 Trie.prototype.countPrefix = function(prefix) {
-  return this.root.countPrefix(prefix);
+  return countPrefixOnNode(prefix, this.root);
 }
 
-/**
- * test
- */
-let trie = new Trie();
+// add the word to the children of the node
+function addWordToNode(word, node) {
+  if (word.length === 0) {
+    node.word++;
+  } else {
+    node.prefix++;
+    
+    let char = word.charAt(0);
+    if (!(char in node.children)) {
+      node.children[char] = new Node(char);
+    }
+    addWordToNode(word.slice(1), node.children[char]);
+  }
+}
 
-trie.addWord('a');
-trie.addWord('a');
-trie.addWord('aa');
-trie.addWord('aab');
-trie.addWord('ab');
-console.log(trie.countWord('ac'));
-console.log(trie.countWord('a'));
-console.log(trie.countPrefix('b'));
+// count the word starting from children of the node
+function countWordOnNode(word, node) {
+  if (word.length === 0) {
+    return node.word;
+  } else {
+    let char = word.charAt(0);
+    if (char in node.children) {
+      return countWordOnNode(word.slice(1), node.children[char]);
+    } else {
+      return 0;
+    }
+  }
+}
+
+// count the prefix starting from children of the node
+function countPrefixOnNode(prefix, node) {
+  if (prefix.length === 0) {
+    return node.prefix;
+  } else {
+    let char = prefix.charAt(0);
+    if (char in node.children) {
+      return countPrefixOnNode(prefix.slice(1), node.children[char]);
+    } else {
+      return 0;
+    }
+  }
+}
+
+let trie = new Trie();
+trie.add('abc');
+trie.add('ab');
+trie.add('abb');
+trie.add('ac');
+trie.add('abc');
+
+console.log(trie.countWord('abc'));
+console.log(trie.countPrefix('a'));
